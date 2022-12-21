@@ -5,7 +5,7 @@ output "do_ssh_key_id" {
 
 output "droplet_user_data" {
   description = "User data for the `digitalocean_droplet`."
-  value       = data.template_file.cloud-init-yaml.rendered
+  value       = local.cloud_init_yml
 }
 
 output "domain_name" {
