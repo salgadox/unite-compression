@@ -15,10 +15,9 @@ data "digitalocean_domain" "domain" {
 }
 
 resource "digitalocean_spaces_bucket" "bucket" {
-  name          = "${var.resource_prefix}-${var.env}"
-  acl           = "public-read"
-  force_destroy = true
-  region        = var.do_region
+  name   = "${var.resource_prefix}-${var.env}"
+  acl    = "public-read"
+  region = var.do_region
 
   cors_rule {
     allowed_methods = ["GET"]
