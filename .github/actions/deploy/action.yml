@@ -29,6 +29,10 @@ inputs:
   compose-config-args:
     description: 'Docker compose config arguments. Example: "-f production.yml".'
     required: true
+  ssh-command-timeout:
+    descrition: 'Timeout for the ssh docker deploy command. Example: "30m"'
+    required: false
+    default: "30m"
 
 runs:
   using: "composite"
@@ -128,3 +132,4 @@ runs:
         username: ${{ inputs.droplet-user }}
         key: ${{ inputs.ssh-key }}
         script: docker-compose ${{ inputs.compose-config-args }} up -d --build
+        command_timeout: ${{ inputs.ssh-command-timeout }}
