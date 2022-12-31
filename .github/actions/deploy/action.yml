@@ -32,7 +32,7 @@ inputs:
   ssh-command-timeout:
     descrition: 'Timeout for the ssh docker deploy command. Example: "30m"'
     required: false
-    default: "30m"
+    default: "60m"
 
 runs:
   using: "composite"
