@@ -8,6 +8,10 @@ services:
     env_file:
       - ./.envs/.staging/.traefik
 
+  celeryworker: *django
+
+  celerybeat: *django
+
   awscli:
     env_file:
       - ./.envs/.staging/.django
