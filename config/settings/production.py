@@ -79,8 +79,10 @@ AWS_S3_ENDPOINT_URL = env("DJANGO_AWS_S3_ENDPOINT_URL")
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#cloudfront
 AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-# https://github.com/jschneier/django-storages/issues/944
-AWS_S3_SIGNATURE_VERSION = "s3"
+# Although https://github.com/jschneier/django-storages/issues/944 says that "s3" must
+# be used to work with DigitalOcean spaces, it seems that they have already updated to
+# s3v4 https://docs.digitalocean.com/reference/api/spaces-api/#authentication
+AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 
 # STATIC
