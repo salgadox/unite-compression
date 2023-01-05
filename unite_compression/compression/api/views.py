@@ -62,9 +62,10 @@ class VideoViewSet(viewsets.ModelViewSet):
         bucket = video.video.storage.bucket
         if expire is None:
             expire = video.video.storage.querystring_expire
+        key = Video.convert_path(video.video.name)
         url = bucket.meta.client.generate_presigned_url(
             "get_object",
-            Params={"Bucket": bucket.name, "Key": video.video.name},
+            Params={"Bucket": bucket.name, "Key": key},
             ExpiresIn=expire,
         )
         return Response({"url": cdn_url(url)}, status=status.HTTP_200_OK)
