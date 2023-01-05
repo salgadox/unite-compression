@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django_ffmpeg.models import ConvertingCommand, Video
 from django_ffmpeg.tasks import convert_video
@@ -41,6 +42,32 @@ class VideoViewSet(viewsets.ModelViewSet):
         existing_tasks = convert_video.AsyncResult(str(pk))
         serializer = AsyncResultSerializer(existing_tasks)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(
+        detail=True,
+        methods=["GET"],
+        url_path="generate_link/(?P<expire>[^/.]+)",
+    )
+    def generate_link(self, request, pk, expire=None):
+        def cdn_url(value):
+            # https://github.com/jschneier/django-storages/issues/944
+            if settings.AWS_S3_ENDPOINT_URL in value:
+                cdn_domain = "https://" + settings.AWS_S3_CUSTOM_DOMAIN
+                new_url = value.replace(settings.AWS_S3_ENDPOINT_URL, cdn_domain)
+                return new_url
+            else:
+                return value
+
+        video = self.queryset.get(pk=pk)
+        bucket = video.video.storage.bucket
+        if expire is None:
+            expire = video.video.storage.querystring_expire
+        url = bucket.meta.client.generate_presigned_url(
+            "get_object",
+            Params={"Bucket": bucket.name, "Key": video.video.name},
+            ExpiresIn=expire,
+        )
+        return Response({"url": cdn_url(url)}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["POST"])
     def convert(self, request, pk):

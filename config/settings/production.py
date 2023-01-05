@@ -79,6 +79,10 @@ AWS_S3_ENDPOINT_URL = env("DJANGO_AWS_S3_ENDPOINT_URL")
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#cloudfront
 AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 aws_s3_domain = AWS_S3_CUSTOM_DOMAIN or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+# https://github.com/jschneier/django-storages/issues/944
+AWS_S3_SIGNATURE_VERSION = "s3"
+
+
 # STATIC
 # ------------------------
 STATICFILES_STORAGE = "unite_compression.utils.storages.StaticRootS3Boto3Storage"
