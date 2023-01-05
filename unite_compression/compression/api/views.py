@@ -46,7 +46,7 @@ class VideoViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["GET"],
-        url_path="generate_link/(?P<expire>[^/.]+)",
+        url_path=r"generate_link(?:/(?P<expire>\d+)/)",
     )
     def generate_link(self, request, pk, expire=None):
         def cdn_url(value):
