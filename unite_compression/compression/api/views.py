@@ -46,29 +46,22 @@ class VideoViewSet(viewsets.ModelViewSet):
     @action(
         detail=True,
         methods=["GET"],
-        url_path=r"generate_link(?:/(?P<expire>\d+)/)",
     )
-    def generate_link(self, request, pk, expire=None):
-        def cdn_url(value):
-            # https://github.com/jschneier/django-storages/issues/944
-            if settings.AWS_S3_ENDPOINT_URL in value:
-                cdn_domain = "https://" + settings.AWS_S3_CUSTOM_DOMAIN
-                new_url = value.replace(settings.AWS_S3_ENDPOINT_URL, cdn_domain)
-                return new_url
-            else:
-                return value
-
+    def generate_link(self, request, pk):
         video = self.queryset.get(pk=pk)
         bucket = video.video.storage.bucket
-        if expire is None:
-            expire = video.video.storage.querystring_expire
-        key = Video.convert_path(video.video.name)
+        expire = request.query_params.get(
+            "expire", video.video.storage.querystring_expire
+        )
+        key = video.converted_path.replace(
+            "https://" + settings.AWS_S3_CUSTOM_DOMAIN + "/", ""
+        )
         url = bucket.meta.client.generate_presigned_url(
             "get_object",
             Params={"Bucket": bucket.name, "Key": key},
             ExpiresIn=expire,
         )
-        return Response({"url": cdn_url(url)}, status=status.HTTP_200_OK)
+        return Response({"url": url}, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=["POST"])
     def convert(self, request, pk):
